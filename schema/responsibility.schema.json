@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "An Adapt course build instance",
+  "type": "object",
+  "properties": {
+    "email": {
+      "description": "Email address for the user",
+      "type": "string"
+    }
+    "firstName": {
+      "description": "First name of the user",
+      "type": "string",
+      "default": "Adapt"
+    }
+    "lastName": {
+      "description": "Last name of the user",
+      "type": "string"
+      "default": "User"
+    }
+    "responsibilities": {
+      "description": "Responsibilities assigned to this user",
+      "type": "array"
+      "items": {
+        "type": "String",
+        "isObjectId": true
+      }
+    }
+  },
+  "required": ["email", "responsibilities"]
+}
