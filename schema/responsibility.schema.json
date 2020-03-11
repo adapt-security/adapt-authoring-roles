@@ -9,14 +9,13 @@
     },
     "displayName": {
       "description": "Human-readable representation of the responsibility",
-      "type": "string",
+      "type": "string"
     },
     "scopes": {
       "description": "Scopes relevant to this responsibility",
-      "type": "array"
+      "type": "array",
       "items": {
-        "type": "String",
-        "isObjectId": true
+        "type": "string"
       }
     }
   },
