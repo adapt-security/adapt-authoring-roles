@@ -3,22 +3,16 @@
   "description": "An Adapt course build instance",
   "type": "object",
   "properties": {
-    "email": {
-      "description": "Email address for the user",
+    "shortName": {
+      "description": "Short name for the responsibility",
       "type": "string"
-    }
-    "firstName": {
-      "description": "First name of the user",
+    },
+    "displayName": {
+      "description": "Human-readable representation of the responsibility",
       "type": "string",
-      "default": "Adapt"
-    }
-    "lastName": {
-      "description": "Last name of the user",
-      "type": "string"
-      "default": "User"
-    }
-    "responsibilities": {
-      "description": "Responsibilities assigned to this user",
+    },
+    "scopes": {
+      "description": "Scopes relevant to this responsibility",
       "type": "array"
       "items": {
         "type": "String",
@@ -26,5 +20,5 @@
       }
     }
   },
-  "required": ["email", "responsibilities"]
+  "required": ["shortName", "displayName", "scopes"]
 }
