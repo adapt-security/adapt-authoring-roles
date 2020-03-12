@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "User roles extension",
+  "type": "object",
+  "properties": {
+    "roles": {
+      "description": "Roles assigned to this user",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "isObjectId": true
+      },
+      "default": []
+    }
+  }
+}
