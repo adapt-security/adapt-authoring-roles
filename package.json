@@ -1,8 +1,8 @@
 {
-  "name": "adapt-authoring-responsibilities",
+  "name": "adapt-authoring-roles",
   "version": "0.0.1",
-  "description": "Module for managing user responsibilities",
-  "homepage": "https://github.com/adapt-security/adapt-authoring-responsibilities",
+  "description": "Module for managing user roles",
+  "homepage": "https://github.com/adapt-security/adapt-authoring-roles",
   "main": "index.js",
   "peerDependencies": {
     "adapt-authoring-api": "github:adapt-security/adapt-authoring-api.git",

@@ -1,2 +1,2 @@
-const responsibilitiesModule = require('./lib/responsibilitiesModule');
-module.exports = responsibilitiesModule;
+const rolesModule = require('./lib/rolesModule');
+module.exports = rolesModule;

@@ -1,18 +1,18 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "An Adapt course build instance",
+  "description": "A user role",
   "type": "object",
   "properties": {
     "shortName": {
-      "description": "Short name for the responsibility",
+      "description": "Short name for the role",
       "type": "string"
     },
     "displayName": {
-      "description": "Human-readable representation of the responsibility",
+      "description": "Human-readable representation of the role",
       "type": "string"
     },
     "scopes": {
-      "description": "Scopes relevant to this responsibility",
+      "description": "Scopes relevant to this role",
       "type": "array",
       "items": {
         "type": "string"
