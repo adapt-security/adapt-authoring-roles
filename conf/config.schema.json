@@ -2,10 +2,29 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "roles": {
+    "defaultRoles": {
       "description": "List of defined roles",
       "type": "array",
-      "items": { "$ref": "role" }
+      "items": {
+        "type": "object",
+        "properties": {
+          "shortName": {
+            "description": "Short name for the role",
+            "type": "string"
+          },
+          "displayName": {
+            "description": "Human-readable representation of the role",
+            "type": "string"
+          },
+          "scopes": {
+            "description": "Scopes relevant to this role",
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["shortName", "displayName", "scopes"]
+      },
+      "default": []
     }
   }
 }
