@@ -2,8 +2,8 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "defaultRoles": {
-      "description": "List of defined roles",
+    "roleDefinitions": {
+      "description": "List of defined roles to be loaded on app start",
       "type": "array",
       "items": {
         "type": "object",
@@ -24,6 +24,12 @@
         },
         "required": ["shortName", "displayName", "scopes"]
       },
+      "default": []
+    },
+    "defaultRoles": {
+      "type": "array",
+      "description": "The roles which are applied by default to new users (expects role shortname)",
+      "items": { "type": "string" },
       "default": []
     }
   }
