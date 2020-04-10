@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A user role",
+  "type": "object",
+  "properties": {
+    "roles": {
+      "description": "List of defined roles",
+      "type": "array",
+      "items": { "$ref": "role" }
+    }
+  }
+}
