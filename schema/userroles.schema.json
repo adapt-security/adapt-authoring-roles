@@ -3,6 +3,7 @@
   "$id": "userroles",
   "description": "Adds role properties to a user",
   "$merge": {
+    "source": { "$ref": "user" },
     "with": {
       "properties": {
         "roles": {
