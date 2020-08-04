@@ -2,7 +2,9 @@
   "name": "adapt-authoring-roles",
   "version": "0.0.1",
   "description": "Module for managing user roles",
-  "homepage": "https://github.com/adapt-security/adapt-authoring-roles",
+  "homepage": "https://github.com/adaptlearning/adapt-authoring-roles",
+  "license": "GPL-3.0",
+  "repository": "github:adaptlearning/adapt-authoring-roles",
   "main": "index.js",
   "peerDependencies": {
     "adapt-authoring-api": "github:adapt-security/adapt-authoring-api.git",
