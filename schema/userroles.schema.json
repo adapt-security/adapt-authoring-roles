@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "userroles",
+  "$anchor": "userroles",
   "description": "Adds role properties to a user",
   "$merge": {
     "type": "merge",
