@@ -24,13 +24,47 @@
         },
         "required": ["shortName", "displayName", "scopes"]
       },
-      "default": []
+      "default": [
+        {
+		      "shortName": "authuser",
+		      "displayName": "Authenticated user",
+		      "scopes": [
+		        "clear:session",
+		        "read:config",
+		        "read:lang",
+		        "write:me",
+		        "disavow:auth"
+		      ]
+		    },
+		    {
+		      "shortName": "contentcreator",
+		      "displayName": "Content creator",
+		      "extends": "authduser",
+		      "scopes": [
+		        "read:schema",
+		        "read:content",
+		        "read:contentplugin",
+		        "write:content",
+		        "preview:adapt",
+		        "publish:adapt",
+		        "import:adapt",
+		        "export:adapt",
+		        "read:tags",
+		        "write:tags"
+		      ]
+		    },
+		    {
+		      "shortName": "superuser",
+		      "displayName": "Super user",
+		      "scopes": ["*:*"]
+		    }
+      ]
     },
     "defaultRoles": {
       "type": "array",
       "description": "The roles which are applied by default to new users (expects role shortname)",
       "items": { "type": "string" },
-      "default": []
+      "default": ["authduser"]
     },
     "defaultRolesForAuthTypes": {
       "type": "object",
