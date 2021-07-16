@@ -16,6 +16,10 @@
             "description": "Human-readable representation of the role",
             "type": "string"
           },
+          "extends": {
+            "description": "The parent role that this role should inherit scopes from",
+            "type": "string"
+          },
           "scopes": {
             "description": "Scopes relevant to this role",
             "type": "array",
