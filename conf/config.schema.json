@@ -39,7 +39,7 @@
 		    {
 		      "shortName": "contentcreator",
 		      "displayName": "Content creator",
-		      "extends": "authduser",
+		      "extends": "authuser",
 		      "scopes": [
 		        "export:adapt",
 		        "import:adapt",
