@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$anchor": "userroles",
-  "description": "Adds role properties to a user",
+  "description": "Extra user properties for specifying roles",
   "$patch": {
     "source": { "$ref": "user" },
     "with": {
