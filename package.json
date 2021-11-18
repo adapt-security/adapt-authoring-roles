@@ -4,6 +4,7 @@
   "description": "Module for managing user roles",
   "homepage": "https://github.com/adaptlearning/adapt-authoring-roles",
   "license": "GPL-3.0",
+  "type": "module",
   "main": "index.js",
   "repository": "adaptlearning/adapt-authoring-roles",
   "peerDependencies": {
