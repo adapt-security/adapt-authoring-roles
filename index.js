@@ -1,1 +1,1 @@
-module.exports = require('./lib/RolesModule');
+export { default } from './lib/RolesModule.js';
