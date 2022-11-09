@@ -69,14 +69,14 @@
       ]
     },
     "defaultRoles": {
-      "type": "array",
       "description": "The roles which are applied by default to new users (expects role shortname)",
+      "type": "array",
       "items": { "type": "string" },
       "default": ["authuser"]
     },
     "defaultRolesForAuthTypes": {
-      "type": "object",
       "description": "Same as defaultRoles, but allows different roles to be specified for different auth types",
+      "type": "object",
       "default": {}
     }
   }
