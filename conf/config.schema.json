@@ -36,6 +36,7 @@
 		        "clear:session",
 		        "read:config",
 		        "read:lang",
+		        "read:me",
 		        "write:me",
 		        "disavow:auth"
 		      ]
