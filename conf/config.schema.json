@@ -54,7 +54,7 @@
 		        "write:assets",
 		        "read:content",
 		        "write:content",
-		        "read:contentplugin",
+		        "read:contentplugins",
 		        "read:roles",
 		        "read:schema",
 		        "read:tags",
