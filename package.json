@@ -1,6 +1,6 @@
 {
   "name": "adapt-authoring-roles",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Module for managing user roles",
   "homepage": "https://github.com/adapt-security/adapt-authoring-roles",
   "license": "GPL-3.0",
