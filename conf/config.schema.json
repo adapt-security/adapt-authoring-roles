@@ -46,8 +46,6 @@
 		      "displayName": "Content creator",
 		      "extends": "authuser",
 		      "scopes": [
-		        "export:adapt",
-		        "import:adapt",
 		        "preview:adapt",
 		        "publish:adapt",
 		        "read:assets",
