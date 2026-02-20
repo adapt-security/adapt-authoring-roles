@@ -914,12 +914,6 @@ describe('RolesModule', () => {
   // ── initDefaultRoles ───────────────────────────────────────────────
 
   describe('initDefaultRoles', () => {
-    // TODO: Bug - initDefaultRoles has a broken reduce in rolesForAuth.
-    // The reduce accumulator is {}, but the callback uses m[k] as a
-    // property key (where m is the accumulator). In the first iteration
-    // m[k] is undefined, so it creates { undefined: Promise }.
-    // defaultRolesForAuthTypes never works correctly.
-    // Fix: return { ...m, [k]: this.shortNamesToIds(v) }
     it('should tap into users preInsertHook', async () => {
       const tapMock = mock.fn()
       const usersModule = { preInsertHook: { tap: tapMock } }
