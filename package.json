@@ -52,22 +52,5 @@
     "adapt-authoring-core": "^1.7.0",
     "adapt-authoring-mongodb": "^1.1.3",
     "adapt-authoring-users": "^1.0.2"
-  },
-  "peerDependenciesMeta": {
-    "adapt-authoring-auth": {
-      "optional": true
-    },
-    "adapt-authoring-auth-local": {
-      "optional": true
-    },
-    "adapt-authoring-core": {
-      "optional": true
-    },
-    "adapt-authoring-mongodb": {
-      "optional": true
-    },
-    "adapt-authoring-users": {
-      "optional": true
-    }
   }
 }
