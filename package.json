@@ -44,7 +44,7 @@
     ]
   },
   "dependencies": {
-    "adapt-authoring-api": "^2.0.0"
+    "adapt-authoring-api": "^3.0.0"
   },
   "peerDependencies": {
     "adapt-authoring-auth": "^2.0.0",
