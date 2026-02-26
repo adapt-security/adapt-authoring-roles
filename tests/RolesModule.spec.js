@@ -13,10 +13,8 @@ import assert from 'node:assert/strict'
 /** Build a minimal RolesModule-like instance with sensible stub defaults */
 function createInstance (overrides) {
   const instance = {
-    root: undefined,
     schemaName: undefined,
     collectionName: undefined,
-    useDefaultRouteConfig: mock.fn(),
     app: {
       waitForModule: mock.fn(async () => ({})),
       errors: {
@@ -46,10 +44,8 @@ function createInstance (overrides) {
 // ── Method references (copied from source for isolated testing) ─────
 
 async function setValues () {
-  this.root = 'roles'
   this.schemaName = 'role'
   this.collectionName = 'roles'
-  this.useDefaultRouteConfig()
 }
 
 async function getScopesForRole (_id) {
@@ -171,12 +167,6 @@ describe('RolesModule', () => {
   // ── setValues ──────────────────────────────────────────────────────
 
   describe('setValues', () => {
-    it('should set root to "roles"', async () => {
-      const inst = createInstance()
-      await setValues.call(inst)
-      assert.equal(inst.root, 'roles')
-    })
-
     it('should set schemaName to "role"', async () => {
       const inst = createInstance()
       await setValues.call(inst)
@@ -187,12 +177,6 @@ describe('RolesModule', () => {
       const inst = createInstance()
       await setValues.call(inst)
       assert.equal(inst.collectionName, 'roles')
-    })
-
-    it('should call useDefaultRouteConfig', async () => {
-      const inst = createInstance()
-      await setValues.call(inst)
-      assert.equal(inst.useDefaultRouteConfig.mock.callCount(), 1)
     })
   })
 
