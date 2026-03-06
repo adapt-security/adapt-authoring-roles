@@ -41,6 +41,58 @@ function createInstance (overrides) {
   return instance
 }
 
+/** Build an instance pre-wired for isTargetSuper tests */
+function createIsTargetSuperInstance (userRoles) {
+  const usersModule = {
+    find: mock.fn(async () => [{ roles: userRoles }])
+  }
+  const inst = createInstance({
+    app: {
+      waitForModule: mock.fn(async () => usersModule),
+      errors: {}
+    },
+    getSuperRoleId: mock.fn(async () => 'super1')
+  })
+  return { inst, usersModule }
+}
+
+/** Build an instance pre-wired for onUpdateRoles disavow tests */
+function createDisavowInstance () {
+  const disavowMock = mock.fn(async () => {})
+  const authModule = { authentication: { disavowUser: disavowMock } }
+  const inst = createInstance({
+    app: {
+      waitForModule: mock.fn(async () => authModule),
+      errors: { UNAUTHORISED: new Error('UNAUTHORISED') }
+    }
+  })
+  return { inst, disavowMock }
+}
+
+/** Build an instance pre-wired for initConfigRoles tests */
+function createConfigRolesInstance (roleDefinitions, overrides = {}) {
+  const mongodbMock = {
+    replace: mock.fn(async () => {}),
+    ...overrides.mongodb
+  }
+  const inst = createInstance({
+    find: mock.fn(async () => []),
+    insert: mock.fn(async (data) => data),
+    getConfig: mock.fn((key) => {
+      if (key === 'roleDefinitions') return roleDefinitions
+      return []
+    }),
+    collectionName: 'roles',
+    schemaName: 'role',
+    app: {
+      waitForModule: mock.fn(async () => mongodbMock),
+      errors: {}
+    },
+    ...overrides
+  })
+  return { inst, mongodbMock }
+}
+
 // ── Method references (copied from source for isolated testing) ─────
 
 async function setValues () {
@@ -335,76 +387,31 @@ describe('RolesModule', () => {
 
   describe('isTargetSuper', () => {
     it('should return true if user has only the super role', async () => {
-      const usersModule = {
-        find: mock.fn(async () => [{ roles: ['super1'] }])
-      }
-      const inst = createInstance({
-        app: {
-          waitForModule: mock.fn(async () => usersModule),
-          errors: {}
-        },
-        getSuperRoleId: mock.fn(async () => 'super1')
-      })
+      const { inst } = createIsTargetSuperInstance(['super1'])
       const result = await isTargetSuper.call(inst, 'user1')
       assert.equal(result, true)
     })
 
     it('should return false if user has multiple roles', async () => {
-      const usersModule = {
-        find: mock.fn(async () => [{ roles: ['super1', 'other'] }])
-      }
-      const inst = createInstance({
-        app: {
-          waitForModule: mock.fn(async () => usersModule),
-          errors: {}
-        },
-        getSuperRoleId: mock.fn(async () => 'super1')
-      })
+      const { inst } = createIsTargetSuperInstance(['super1', 'other'])
       const result = await isTargetSuper.call(inst, 'user1')
       assert.equal(result, false)
     })
 
     it('should return false if user has a non-super role', async () => {
-      const usersModule = {
-        find: mock.fn(async () => [{ roles: ['regular1'] }])
-      }
-      const inst = createInstance({
-        app: {
-          waitForModule: mock.fn(async () => usersModule),
-          errors: {}
-        },
-        getSuperRoleId: mock.fn(async () => 'super1')
-      })
+      const { inst } = createIsTargetSuperInstance(['regular1'])
       const result = await isTargetSuper.call(inst, 'user1')
       assert.equal(result, false)
     })
 
     it('should return false if user has no roles', async () => {
-      const usersModule = {
-        find: mock.fn(async () => [{ roles: [] }])
-      }
-      const inst = createInstance({
-        app: {
-          waitForModule: mock.fn(async () => usersModule),
-          errors: {}
-        },
-        getSuperRoleId: mock.fn(async () => 'super1')
-      })
+      const { inst } = createIsTargetSuperInstance([])
       const result = await isTargetSuper.call(inst, 'user1')
       assert.equal(result, false)
     })
 
     it('should pass projection for roles only', async () => {
-      const usersModule = {
-        find: mock.fn(async () => [{ roles: ['super1'] }])
-      }
-      const inst = createInstance({
-        app: {
-          waitForModule: mock.fn(async () => usersModule),
-          errors: {}
-        },
-        getSuperRoleId: mock.fn(async () => 'super1')
-      })
+      const { inst, usersModule } = createIsTargetSuperInstance(['super1'])
       await isTargetSuper.call(inst, 'user1')
       const findArgs = usersModule.find.mock.calls[0].arguments
       assert.deepEqual(findArgs[1], { projection: { roles: 1 } })
@@ -460,14 +467,7 @@ describe('RolesModule', () => {
     })
 
     it('should not return early for DELETE even without roles', async () => {
-      const disavowMock = mock.fn(async () => {})
-      const authModule = { authentication: { disavowUser: disavowMock } }
-      const inst = createInstance({
-        app: {
-          waitForModule: mock.fn(async () => authModule),
-          errors: { UNAUTHORISED: new Error('UNAUTHORISED') }
-        }
-      })
+      const { inst, disavowMock } = createDisavowInstance()
       const req = createReq({
         method: 'DELETE',
         apiData: { modifying: false, data: {}, query: { _id: 'target1' } },
@@ -482,14 +482,7 @@ describe('RolesModule', () => {
     })
 
     it('should skip auth checks for super users', async () => {
-      const disavowMock = mock.fn(async () => {})
-      const authModule = { authentication: { disavowUser: disavowMock } }
-      const inst = createInstance({
-        app: {
-          waitForModule: mock.fn(async () => authModule),
-          errors: { UNAUTHORISED: new Error('UNAUTHORISED') }
-        }
-      })
+      const { inst, disavowMock } = createDisavowInstance()
       const req = createReq({
         auth: {
           isSuper: true,
@@ -557,14 +550,7 @@ describe('RolesModule', () => {
     })
 
     it('should disavow user for non-POST methods', async () => {
-      const disavowMock = mock.fn(async () => {})
-      const authModule = { authentication: { disavowUser: disavowMock } }
-      const inst = createInstance({
-        app: {
-          waitForModule: mock.fn(async () => authModule),
-          errors: { UNAUTHORISED: new Error('UNAUTHORISED') }
-        }
-      })
+      const { inst, disavowMock } = createDisavowInstance()
       const req = createReq({
         method: 'PUT',
         params: { _id: 'param-id' },
@@ -582,14 +568,7 @@ describe('RolesModule', () => {
     })
 
     it('should use body._id if params._id is not set', async () => {
-      const disavowMock = mock.fn(async () => {})
-      const authModule = { authentication: { disavowUser: disavowMock } }
-      const inst = createInstance({
-        app: {
-          waitForModule: mock.fn(async () => authModule),
-          errors: { UNAUTHORISED: new Error('UNAUTHORISED') }
-        }
-      })
+      const { inst, disavowMock } = createDisavowInstance()
       const req = createReq({
         method: 'PUT',
         params: {},
@@ -608,14 +587,7 @@ describe('RolesModule', () => {
     })
 
     it('should not disavow user for POST method', async () => {
-      const disavowMock = mock.fn(async () => {})
-      const authModule = { authentication: { disavowUser: disavowMock } }
-      const inst = createInstance({
-        app: {
-          waitForModule: mock.fn(async () => authModule),
-          errors: { UNAUTHORISED: new Error('UNAUTHORISED') }
-        }
-      })
+      const { inst, disavowMock } = createDisavowInstance()
       const req = createReq({
         method: 'POST',
         auth: {
@@ -691,105 +663,42 @@ describe('RolesModule', () => {
 
   describe('initConfigRoles', () => {
     it('should insert new roles that do not exist', async () => {
-      const insertMock = mock.fn(async (data) => data)
-      const inst = createInstance({
-        find: mock.fn(async () => []),
-        insert: insertMock,
-        getConfig: mock.fn((key) => {
-          if (key === 'roleDefinitions') {
-            return [{
-              shortName: 'newrole',
-              displayName: 'New Role',
-              scopes: ['read:all']
-            }]
-          }
-          return []
-        }),
-        collectionName: 'roles',
-        schemaName: 'role',
-        app: {
-          waitForModule: mock.fn(async () => ({ replace: mock.fn() })),
-          errors: {}
-        }
-      })
+      const { inst } = createConfigRolesInstance([
+        { shortName: 'newrole', displayName: 'New Role', scopes: ['read:all'] }
+      ])
       await initConfigRoles.call(inst)
-      assert.equal(insertMock.mock.callCount(), 1)
+      assert.equal(inst.insert.mock.callCount(), 1)
       assert.equal(
-        insertMock.mock.calls[0].arguments[0].shortName, 'newrole'
+        inst.insert.mock.calls[0].arguments[0].shortName, 'newrole'
       )
     })
 
     it('should replace existing roles', async () => {
-      const replaceMock = mock.fn(async () => {})
-      const inst = createInstance({
-        find: mock.fn(async () => [{ _id: 'existing1', shortName: 'admin' }]),
-        insert: mock.fn(async () => {}),
-        getConfig: mock.fn((key) => {
-          if (key === 'roleDefinitions') {
-            return [{
-              shortName: 'admin', displayName: 'Admin', scopes: ['*:*']
-            }]
-          }
-          return []
-        }),
-        collectionName: 'roles',
-        schemaName: 'role',
-        app: {
-          waitForModule: mock.fn(async () => ({ replace: replaceMock })),
-          errors: {}
-        }
-      })
+      const { inst, mongodbMock } = createConfigRolesInstance(
+        [{ shortName: 'admin', displayName: 'Admin', scopes: ['*:*'] }],
+        { find: mock.fn(async () => [{ _id: 'existing1', shortName: 'admin' }]) }
+      )
       await initConfigRoles.call(inst)
-      assert.equal(replaceMock.mock.callCount(), 1)
+      assert.equal(mongodbMock.replace.mock.callCount(), 1)
       assert.deepEqual(
-        replaceMock.mock.calls[0].arguments[1], { _id: 'existing1' }
+        mongodbMock.replace.mock.calls[0].arguments[1], { _id: 'existing1' }
       )
     })
 
     it('should log debug on successful insert', async () => {
-      const inst = createInstance({
-        find: mock.fn(async () => []),
-        insert: mock.fn(async () => {}),
-        getConfig: mock.fn((key) => {
-          if (key === 'roleDefinitions') {
-            return [{
-              shortName: 'testrole', displayName: 'Test', scopes: []
-            }]
-          }
-          return []
-        }),
-        collectionName: 'roles',
-        schemaName: 'role',
-        app: {
-          waitForModule: mock.fn(async () => ({})),
-          errors: {}
-        }
-      })
+      const { inst } = createConfigRolesInstance([
+        { shortName: 'testrole', displayName: 'Test', scopes: [] }
+      ], { insert: mock.fn(async () => {}) })
       await initConfigRoles.call(inst)
       assert.equal(inst.log.mock.calls[0].arguments[0], 'debug')
       assert.equal(inst.log.mock.calls[0].arguments[1], 'INSERT')
     })
 
     it('should log debug on successful replace', async () => {
-      const inst = createInstance({
-        find: mock.fn(async () => [{ _id: 'id1', shortName: 'admin' }]),
-        getConfig: mock.fn((key) => {
-          if (key === 'roleDefinitions') {
-            return [{
-              shortName: 'admin', displayName: 'Admin', scopes: []
-            }]
-          }
-          return []
-        }),
-        collectionName: 'roles',
-        schemaName: 'role',
-        app: {
-          waitForModule: mock.fn(async () => ({
-            replace: mock.fn(async () => {})
-          })),
-          errors: {}
-        }
-      })
+      const { inst } = createConfigRolesInstance(
+        [{ shortName: 'admin', displayName: 'Admin', scopes: [] }],
+        { find: mock.fn(async () => [{ _id: 'id1', shortName: 'admin' }]) }
+      )
       await initConfigRoles.call(inst)
       assert.equal(inst.log.mock.calls[0].arguments[0], 'debug')
       assert.equal(inst.log.mock.calls[0].arguments[1], 'REPLACE')
@@ -798,24 +707,10 @@ describe('RolesModule', () => {
     it('should suppress duplicate key errors on insert', async () => {
       const dupError = new Error('duplicate key')
       dupError.code = 11000
-      const inst = createInstance({
-        find: mock.fn(async () => []),
-        insert: mock.fn(async () => { throw dupError }),
-        getConfig: mock.fn((key) => {
-          if (key === 'roleDefinitions') {
-            return [{
-              shortName: 'dup', displayName: 'Dup', scopes: []
-            }]
-          }
-          return []
-        }),
-        collectionName: 'roles',
-        schemaName: 'role',
-        app: {
-          waitForModule: mock.fn(async () => ({})),
-          errors: {}
-        }
-      })
+      const { inst } = createConfigRolesInstance(
+        [{ shortName: 'dup', displayName: 'Dup', scopes: [] }],
+        { insert: mock.fn(async () => { throw dupError }) }
+      )
       await initConfigRoles.call(inst)
       const warnCalls = inst.log.mock.calls.filter(
         c => c.arguments[0] === 'warn'
@@ -826,24 +721,10 @@ describe('RolesModule', () => {
     it('should log warning for non-duplicate insert errors', async () => {
       const error = new Error('some error')
       error.code = 500
-      const inst = createInstance({
-        find: mock.fn(async () => []),
-        insert: mock.fn(async () => { throw error }),
-        getConfig: mock.fn((key) => {
-          if (key === 'roleDefinitions') {
-            return [{
-              shortName: 'fail', displayName: 'Fail', scopes: []
-            }]
-          }
-          return []
-        }),
-        collectionName: 'roles',
-        schemaName: 'role',
-        app: {
-          waitForModule: mock.fn(async () => ({})),
-          errors: {}
-        }
-      })
+      const { inst } = createConfigRolesInstance(
+        [{ shortName: 'fail', displayName: 'Fail', scopes: [] }],
+        { insert: mock.fn(async () => { throw error }) }
+      )
       await initConfigRoles.call(inst)
       const warnCalls = inst.log.mock.calls.filter(
         c => c.arguments[0] === 'warn'
@@ -855,25 +736,15 @@ describe('RolesModule', () => {
     it('should suppress duplicate key errors on replace', async () => {
       const dupError = new Error('duplicate key')
       dupError.code = 11000
-      const inst = createInstance({
-        find: mock.fn(async () => [{ _id: 'id1', shortName: 'admin' }]),
-        getConfig: mock.fn((key) => {
-          if (key === 'roleDefinitions') {
-            return [{
-              shortName: 'admin', displayName: 'Admin', scopes: []
-            }]
-          }
-          return []
-        }),
-        collectionName: 'roles',
-        schemaName: 'role',
-        app: {
-          waitForModule: mock.fn(async () => ({
+      const { inst } = createConfigRolesInstance(
+        [{ shortName: 'admin', displayName: 'Admin', scopes: [] }],
+        {
+          find: mock.fn(async () => [{ _id: 'id1', shortName: 'admin' }]),
+          mongodb: {
             replace: mock.fn(async () => { throw dupError })
-          })),
-          errors: {}
+          }
         }
-      })
+      )
       await initConfigRoles.call(inst)
       const warnCalls = inst.log.mock.calls.filter(
         c => c.arguments[0] === 'warn'
@@ -882,13 +753,7 @@ describe('RolesModule', () => {
     })
 
     it('should handle empty roleDefinitions', async () => {
-      const inst = createInstance({
-        getConfig: mock.fn(() => []),
-        app: {
-          waitForModule: mock.fn(async () => ({})),
-          errors: {}
-        }
-      })
+      const { inst } = createConfigRolesInstance([])
       const result = await initConfigRoles.call(inst)
       assert.ok(Array.isArray(result))
       assert.equal(result.length, 0)
