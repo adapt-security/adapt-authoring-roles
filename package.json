@@ -23,7 +23,7 @@
   "peerDependencies": {
     "adapt-authoring-auth": "^2.0.0",
     "adapt-authoring-auth-local": "^2.0.0",
-    "adapt-authoring-core": "^2.0.0",
+    "adapt-authoring-core": "^3.0.0",
     "adapt-authoring-mongodb": "^3.0.0",
     "adapt-authoring-users": "^1.0.2"
   }
