@@ -7,13 +7,17 @@
     "with": {
       "properties": {
         "roles": {
+          "title": "Role",
           "description": "Roles assigned to this user",
           "type": "array",
           "items": {
             "type": "string",
             "isObjectId": true
           },
-          "default": []
+          "default": [],
+          "_adapt": {
+            "inputType": "Roles"
+          }
         }
       }
     }
